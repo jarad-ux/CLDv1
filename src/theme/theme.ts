@@ -5,29 +5,29 @@
  */
 
 export const theme = {
-  // Color Palette
+  // Color Palette - gogreenga.org Brand Colors
   colors: {
-    // Primary - Green (eco-friendly, growth, sustainability)
+    // Primary - Forest/Teal Green (gogreenga.org main brand)
     primary: {
-      main: '#2D5F3F',       // Deep forest green - stability, trust
-      light: '#3D7F5F',      // Lighter shade for hover states
-      dark: '#1D4F2F',       // Darker shade for pressed states
+      main: '#2B7A5F',       // gogreenga.org primary green
+      light: '#3A8A6F',      // Lighter shade for hover states
+      dark: '#1F6B4F',       // Darker shade (CTA button green)
       contrast: '#FFFFFF',   // White text on primary
     },
 
-    // Secondary - Vibrant Green
+    // Secondary - Mint Green (gogreenga.org accent)
     secondary: {
-      main: '#4CAF50',       // Material green - energy, positive action
-      light: '#6FBF73',      // Lighter for backgrounds
-      dark: '#3D8B40',       // Darker for emphasis
+      main: '#78B893',       // gogreenga.org mint green - accents
+      light: '#8FC8A5',      // Lighter for backgrounds
+      dark: '#5FA07B',       // Darker for emphasis
       contrast: '#FFFFFF',
     },
 
-    // Accent - Blue (energy, utilities, professionalism)
-    accent: {
-      main: '#0066CC',       // Utility blue - trust, tech
-      light: '#3385D6',
-      dark: '#004C99',
+    // CTA - Primary Action Button (gogreenga.org CTA)
+    cta: {
+      main: '#1F6B4F',       // "Start Assessment" / "Check Eligibility" green
+      light: '#2B7A5F',      // Lighter for hover states
+      dark: '#184F3A',       // Darker for pressed states
       contrast: '#FFFFFF',
     },
 
@@ -54,7 +54,7 @@ export const theme = {
     },
 
     // Semantic Colors
-    success: '#4CAF50',
+    success: '#2B7A5F',    // Use brand green for success states
     warning: '#FF9800',
     error: '#F44336',
     info: '#2196F3',
