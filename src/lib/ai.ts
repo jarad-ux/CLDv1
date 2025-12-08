@@ -1,5 +1,5 @@
 import type { CalculatorResult } from './calculator'
-import { getStateMetadata } from './states'
+import { getStateMetadata, type StateMetadata } from './states'
 import { logger } from '@/utils/logger'
 import { formatCurrency } from '@/utils/format'
 
@@ -362,7 +362,7 @@ export async function generateStateContent(stateCode: string): Promise<StateCont
  */
 function generateTemplateStateContent(
   stateCode: string,
-  metadata: any // StateMetadata type
+  metadata: StateMetadata
 ): StateContent {
   const stateName = metadata.name
   const isActive = metadata.status === 'active'

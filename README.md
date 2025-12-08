@@ -201,27 +201,106 @@ Capture lead information.
 }
 ```
 
-### MCP Integration Points
+### MCP & Automation Hooks
 
-The application has three MCP hook placeholders in `/lib/ai.ts`:
+All AI and automation integration points live in `/src/lib/ai.ts`. **The app works immediately without any MCP server configured** — each function includes intelligent template-based fallback logic. When you're ready to wire in real AI or automation, the MCP integration points are clearly marked with TODO comments and example code.
 
-1. **`enrichWithGuidance(result)`**
-   - Called after calculation
-   - Purpose: Generate AI-powered homeowner/contractor guidance
-   - Returns: Enhanced result with advice
+#### 1. `enrichWithGuidance(result: CalculatorResult): Promise<EnrichedCalculatorResult>`
 
-2. **`sendLeadToPipelines(lead)`**
-   - Called when lead is captured
-   - Purpose: Trigger downstream automations (Twilio, Retell, CRM)
-   - Returns: Success status
+**Current Behavior (Template-based):**
+- Generates personalized homeowner guidance based on income category (low/moderate/over-limit)
+- Creates contractor notes about licensing, ENERGY STAR requirements, documentation
+- Provides actionable next steps (gather docs, find contractors, apply for rebates)
+- All logic is deterministic and works offline
 
-3. **`generateStateContent(stateCode)`**
-   - Purpose: Generate dynamic state-specific content
-   - Returns: Description, FAQs
+**Returns:**
+```typescript
+{
+  ...result,
+  advice: {
+    homeownerSummary: string,      // Plain-language explanation
+    contractorNotes: string[],     // Project requirements
+    nextSteps: string[]            // Actionable items
+  }
+}
+```
 
-**To implement MCP integration:**
+**MCP Integration (Future):**
+Replace the `generateTemplateGuidance()` call with:
+```typescript
+const mcpResponse = await mcpClient.callTool('generate_rebate_guidance', {
+  result,
+  context: { county: result.county, selectedUpgrades: result.lineItems.map(i => i.name) }
+})
+```
 
-Open this repo in Claude Code and provide it with your MCP server configuration. The hooks are already structured as clean integration points.
+Expected MCP tool schema documented in ai.ts comments.
+
+---
+
+#### 2. `sendLeadToPipelines(lead): Promise<{ ok: boolean, errors?: string[] }>`
+
+**Current Behavior (Logging only):**
+- Logs structured lead data (contact info, property details, rebate estimate, consent)
+- Returns `{ ok: true }` immediately
+- Safe for production (no external calls)
+
+**MCP Integration (Future):**
+Fan out to 4 automation systems in parallel:
+1. **Twilio** - Queue outbound call task
+2. **Retell AI** - Start voice agent workflow
+3. **CRM** - Upsert lead record (Salesforce/HubSpot/etc.)
+4. **Email** - Send confirmation with next steps
+
+Complete example code with error handling is in the ai.ts function comments.
+
+**Required Environment Variables (when MCP is wired):**
+- `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, `TWILIO_PHONE_NUMBER`
+- `RETELL_API_KEY`, `RETELL_WORKSPACE_ID`
+- `CRM_API_KEY`, `CRM_TYPE`
+
+---
+
+#### 3. `generateStateContent(stateCode): Promise<StateContent>`
+
+**Current Behavior (Template-based):**
+- Reads state metadata from `/data/states.json`
+- Generates hero title/subtitle based on program status
+- Creates 4-5 relevant FAQs per state
+- Returns rich content for state landing pages
+
+**Returns:**
+```typescript
+{
+  heroTitle: string,
+  heroSubtitle: string,
+  description: string,
+  faq: Array<{ question: string, answer: string }>,
+  additionalNotes: string[]
+}
+```
+
+**MCP Integration (Future):**
+```typescript
+const mcpResponse = await mcpClient.callTool('generate_state_content', {
+  stateCode,
+  metadata: stateMetadata,
+  context: { programStatus, hasStateProgram, existingNotes }
+})
+```
+
+This would enable AI-generated, SEO-optimized content that adapts to program changes.
+
+---
+
+**How to Wire MCP:**
+
+1. Configure your MCP server with the required tools (schemas in ai.ts comments)
+2. Replace the template function calls with `mcpClient.callTool()` calls
+3. Add environment variables to `.env.local`
+4. Test each hook independently before deploying
+
+The app will continue working during the migration since template logic remains as fallback.
 
 ## Data Files
 
