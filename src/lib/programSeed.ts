@@ -3,12 +3,20 @@ import { PrismaClient } from '@prisma/client'
 /**
  * Program Catalog Seed
  *
- * Seeds the national rebate registry with initial programs:
- * - Federal 25C Tax Credit
+ * Seeds the national rebate registry with comprehensive programs:
+ * - Federal 25C Tax Credit (all measures)
  * - HEAR/HOMES programs for tier-1 states (GA, NC, MD)
- * - Example utility programs
+ * - Major utility programs:
+ *   - Georgia Power (GA)
+ *   - Southern California Edison / SCE (CA)
+ *   - Pacific Gas & Electric / PG&E (CA)
+ *   - Duke Energy (Multi-state: NC, SC, FL, IN, OH, KY)
+ *   - Xcel Energy (Multi-state: CO, MN, WI, MI, NM, TX)
+ *   - Con Edison / ConEd (NY)
+ *   - Commonwealth Edison / ComEd (IL)
  *
  * All upserts are idempotent - safe to run multiple times.
+ * Total programs: 16 (1 federal + 5 state + 10 utility)
  */
 
 const PROGRAM_DEFINITIONS = [
@@ -401,7 +409,9 @@ const PROGRAM_DEFINITIONS = [
     ],
   },
 
-  // ===== UTILITY PROGRAMS (Example) =====
+  // ===== UTILITY PROGRAMS =====
+
+  // Georgia Power
   {
     program: {
       slug: 'georgia-power-hpwh-rebate',
@@ -441,6 +451,401 @@ const PROGRAM_DEFINITIONS = [
       {
         title: 'Georgia Power Residential Rebates',
         url: 'https://www.georgiapower.com/residential/save-money-and-energy/rebates.html',
+        sourceType: 'tariff',
+      },
+    ],
+  },
+
+  // Southern California Edison (SCE)
+  {
+    program: {
+      slug: 'sce-hpwh',
+      name: 'SCE Heat Pump Water Heater Rebate',
+      jurisdictionType: 'utility',
+      jurisdictionCode: 'SCE',
+      programType: 'rebate',
+      status: 'active',
+      administeringEntity: 'Southern California Edison',
+      urlOfficial: 'https://www.sce.com/residential/rebates-savings/rebates-by-product/water-heating',
+      summaryShort: 'Rebate for qualifying heat pump water heater installations in SCE territory',
+      summaryLong:
+        'Southern California Edison offers bill-credit style rebates for qualifying heat pump water heaters installed in eligible single-family homes within SCE electric service territory. Incentives typically stack with federal tax credits and statewide TECH/HEEHRA incentives where allowed.',
+    },
+    benefits: [
+      {
+        measure: 'hpwh',
+        structure: 'fixed',
+        amountMax: 1000,
+        notes: 'Representative value; confirm current SCE schedule before quoting',
+      },
+    ],
+    eligibilityRules: [
+      {
+        ruleType: 'territory',
+        definition: {
+          utilityTerritory: 'SCE service area',
+          note: 'Must be SCE residential electric customer',
+        },
+      },
+    ],
+    sources: [
+      {
+        title: 'SCE Water Heating Rebates',
+        url: 'https://www.sce.com/residential/rebates-savings',
+        sourceType: 'tariff',
+      },
+    ],
+  },
+  {
+    program: {
+      slug: 'sce-heat-pump-hvac',
+      name: 'SCE Heat Pump HVAC Rebate',
+      jurisdictionType: 'utility',
+      jurisdictionCode: 'SCE',
+      programType: 'rebate',
+      status: 'active',
+      administeringEntity: 'Southern California Edison',
+      urlOfficial: 'https://www.sce.com/residential/rebates-savings/rebates-by-product/heating-cooling',
+      summaryShort: 'Rebate for high-efficiency heat pump HVAC systems in SCE territory',
+      summaryLong:
+        'SCE provides incentives for qualifying split and package heat pump systems meeting program efficiency tiers. Incentives typically stack with TECH Clean California and federal tax credits, subject to program rules.',
+    },
+    benefits: [
+      {
+        measure: 'heat-pump-hvac',
+        structure: 'per-ton',
+        amountMax: 4000,
+        notes: 'Modeled as per-ton rebate with example cap; confirm SCE schedule',
+      },
+    ],
+    eligibilityRules: [
+      {
+        ruleType: 'territory',
+        definition: {
+          utilityTerritory: 'SCE service area',
+          note: 'Must be SCE residential electric customer',
+        },
+      },
+      {
+        ruleType: 'equipment-spec',
+        definition: { requirements: 'Must meet SCE efficiency tiers for qualifying heat pumps' },
+      },
+    ],
+    sources: [
+      {
+        title: 'SCE Heating & Cooling Rebates',
+        url: 'https://www.sce.com/residential/rebates-savings',
+        sourceType: 'tariff',
+      },
+    ],
+  },
+
+  // Pacific Gas & Electric (PG&E)
+  {
+    program: {
+      slug: 'pge-hpwh',
+      name: 'PG&E Heat Pump Water Heater Rebate',
+      jurisdictionType: 'utility',
+      jurisdictionCode: 'PGE',
+      programType: 'rebate',
+      status: 'active',
+      administeringEntity: 'Pacific Gas and Electric Company',
+      urlOfficial: 'https://www.pge.com/en_US/residential/save-energy-money/savings-solutions-and-rebates/rebates-by-product/water-heating-rebates.page',
+      summaryShort: 'Rebate for qualifying heat pump water heaters in PG&E territory',
+      summaryLong:
+        'PG&E offers rebates for qualifying ENERGY STAR heat pump water heaters for residential customers. Stacks with federal tax credits and California TECH Clean California programs.',
+    },
+    benefits: [
+      {
+        measure: 'hpwh',
+        structure: 'fixed',
+        amountMax: 800,
+        notes: 'Example value; verify current PG&E rebate schedule',
+      },
+    ],
+    eligibilityRules: [
+      {
+        ruleType: 'territory',
+        definition: {
+          utilityTerritory: 'PG&E service area',
+          note: 'Must be PG&E residential gas or electric customer',
+        },
+      },
+      {
+        ruleType: 'equipment-spec',
+        definition: { requirements: 'ENERGY STAR certified heat pump water heater' },
+      },
+    ],
+    sources: [
+      {
+        title: 'PG&E Water Heating Rebates',
+        url: 'https://www.pge.com/rebates',
+        sourceType: 'tariff',
+      },
+    ],
+  },
+  {
+    program: {
+      slug: 'pge-heat-pump-hvac',
+      name: 'PG&E Heat Pump HVAC Rebate',
+      jurisdictionType: 'utility',
+      jurisdictionCode: 'PGE',
+      programType: 'rebate',
+      status: 'active',
+      administeringEntity: 'Pacific Gas and Electric Company',
+      urlOfficial: 'https://www.pge.com/en_US/residential/save-energy-money/savings-solutions-and-rebates/rebates-by-product/heating-cooling-rebates.page',
+      summaryShort: 'Rebate for high-efficiency central heat pump systems in PG&E territory',
+      summaryLong:
+        'PG&E provides rebates for qualifying high-efficiency central heat pump systems. Rebates vary based on system efficiency and size. Can stack with TECH Clean California and federal incentives.',
+    },
+    benefits: [
+      {
+        measure: 'heat-pump-hvac',
+        structure: 'per-ton',
+        amountMax: 3500,
+        notes: 'Per-ton structure with example cap; confirm current PG&E schedule',
+      },
+    ],
+    eligibilityRules: [
+      {
+        ruleType: 'territory',
+        definition: {
+          utilityTerritory: 'PG&E service area',
+          note: 'Must be PG&E residential customer',
+        },
+      },
+      {
+        ruleType: 'equipment-spec',
+        definition: { requirements: 'Must meet PG&E efficiency requirements for heat pumps' },
+      },
+    ],
+    sources: [
+      {
+        title: 'PG&E Heating & Cooling Rebates',
+        url: 'https://www.pge.com/rebates',
+        sourceType: 'tariff',
+      },
+    ],
+  },
+
+  // Duke Energy (Multi-State)
+  {
+    program: {
+      slug: 'duke-energy-heat-pump',
+      name: 'Duke Energy Heat Pump Incentive',
+      jurisdictionType: 'utility',
+      jurisdictionCode: 'DUKE_ENERGY',
+      programType: 'rebate',
+      status: 'active',
+      administeringEntity: 'Duke Energy',
+      urlOfficial: 'https://www.duke-energy.com/home/products/air-source-heat-pump',
+      summaryShort: 'Heat pump incentives for eligible Duke Energy residential customers across multiple states',
+      summaryLong:
+        'Duke Energy offers prescriptive incentives for qualifying central heat pump installations in select territories across NC, SC, FL, IN, OH, and KY. Incentive levels and eligibility vary by state and tariff, but can typically stack with federal tax credits and state-level programs.',
+    },
+    benefits: [
+      {
+        measure: 'heat-pump-hvac',
+        structure: 'fixed',
+        amountMax: 1500,
+        notes: 'Generic modeled value across territories; confirm specific program schedule per state',
+      },
+    ],
+    eligibilityRules: [
+      {
+        ruleType: 'territory',
+        definition: {
+          utilityTerritory: 'Duke Energy service areas (NC, SC, FL, IN, OH, KY)',
+          note: 'Must be Duke Energy residential customer; varies by state',
+        },
+      },
+      {
+        ruleType: 'equipment-spec',
+        definition: { requirements: 'Must meet Duke Energy efficiency standards' },
+      },
+    ],
+    sources: [
+      {
+        title: 'Duke Energy Heating & Cooling Programs',
+        url: 'https://www.duke-energy.com/home/products',
+        sourceType: 'tariff',
+      },
+    ],
+  },
+
+  // Xcel Energy (Multi-State)
+  {
+    program: {
+      slug: 'xcel-heat-pump-hvac',
+      name: 'Xcel Energy Heat Pump Rebate',
+      jurisdictionType: 'utility',
+      jurisdictionCode: 'XCEL_ENERGY',
+      programType: 'rebate',
+      status: 'active',
+      administeringEntity: 'Xcel Energy',
+      urlOfficial: 'https://www.xcelenergy.com/programs_and_rebates/residential_programs_and_rebates/heating_and_cooling_rebates',
+      summaryShort: 'Rebates for high-efficiency heat pump systems across Xcel territories',
+      summaryLong:
+        'Xcel Energy offers some of the highest utility heat pump rebates in the nation across service territories in CO, MN, WI, MI, NM, and TX. Rebates vary by state and system efficiency tier. Can stack with federal tax credits and state HEAR/HOMES programs.',
+    },
+    benefits: [
+      {
+        measure: 'heat-pump-hvac',
+        structure: 'fixed',
+        amountMax: 2500,
+        notes: 'Varies by state and efficiency tier; CO territories often have highest rebates',
+      },
+    ],
+    eligibilityRules: [
+      {
+        ruleType: 'territory',
+        definition: {
+          utilityTerritory: 'Xcel Energy service areas (CO, MN, WI, MI, NM, TX)',
+          note: 'Must be Xcel Energy electric customer',
+        },
+      },
+      {
+        ruleType: 'equipment-spec',
+        definition: { requirements: 'Must meet Xcel efficiency tiers; cold-climate HP focus in northern territories' },
+      },
+    ],
+    sources: [
+      {
+        title: 'Xcel Energy Heating & Cooling Rebates',
+        url: 'https://www.xcelenergy.com/programs_and_rebates',
+        sourceType: 'tariff',
+      },
+    ],
+  },
+  {
+    program: {
+      slug: 'xcel-hpwh',
+      name: 'Xcel Energy Heat Pump Water Heater Rebate',
+      jurisdictionType: 'utility',
+      jurisdictionCode: 'XCEL_ENERGY',
+      programType: 'rebate',
+      status: 'active',
+      administeringEntity: 'Xcel Energy',
+      urlOfficial: 'https://www.xcelenergy.com/programs_and_rebates/residential_programs_and_rebates/water_heating_rebates',
+      summaryShort: 'Rebates for ENERGY STAR heat pump water heaters',
+      summaryLong:
+        'Xcel Energy provides rebates for qualifying ENERGY STAR heat pump water heater installations across residential territories. Can combine with federal tax credits and state incentives.',
+    },
+    benefits: [
+      {
+        measure: 'hpwh',
+        structure: 'fixed',
+        amountMax: 750,
+        notes: 'Varies by territory; confirm current schedule',
+      },
+    ],
+    eligibilityRules: [
+      {
+        ruleType: 'territory',
+        definition: {
+          utilityTerritory: 'Xcel Energy service areas',
+          note: 'Must be Xcel Energy electric customer',
+        },
+      },
+      {
+        ruleType: 'equipment-spec',
+        definition: { requirements: 'ENERGY STAR certified heat pump water heater' },
+      },
+    ],
+    sources: [
+      {
+        title: 'Xcel Energy Water Heating Rebates',
+        url: 'https://www.xcelenergy.com/programs_and_rebates',
+        sourceType: 'tariff',
+      },
+    ],
+  },
+
+  // Con Edison (New York)
+  {
+    program: {
+      slug: 'coned-heat-pump',
+      name: 'Con Edison Clean Heat Program',
+      jurisdictionType: 'utility',
+      jurisdictionCode: 'CONED',
+      programType: 'rebate',
+      status: 'active',
+      administeringEntity: 'Consolidated Edison Company of New York',
+      urlOfficial: 'https://www.coned.com/en/save-money/rebates-incentives-tax-credits/rebates-incentives-tax-credits-for-residential-customers/heat-pumps',
+      summaryShort: 'Incentives for heat pump installations in ConEd territory',
+      summaryLong:
+        'Con Edison offers rebates for qualifying air-source heat pumps, including cold-climate models, for residential customers in NYC and Westchester. Stacks with NYSERDA programs, federal tax credits, and NY HEAR/HOMES rebates where applicable.',
+    },
+    benefits: [
+      {
+        measure: 'heat-pump-hvac',
+        structure: 'fixed',
+        amountMax: 2000,
+        notes: 'Enhanced rebates for cold-climate heat pumps; confirm current ConEd schedule',
+      },
+    ],
+    eligibilityRules: [
+      {
+        ruleType: 'territory',
+        definition: {
+          utilityTerritory: 'Con Edison service area (NYC, Westchester)',
+          note: 'Must be ConEd electric customer',
+        },
+      },
+      {
+        ruleType: 'equipment-spec',
+        definition: { requirements: 'Must meet ConEd efficiency standards; cold-climate HP preferred' },
+      },
+    ],
+    sources: [
+      {
+        title: 'ConEd Heat Pump Rebates',
+        url: 'https://www.coned.com/rebates',
+        sourceType: 'tariff',
+      },
+    ],
+  },
+
+  // ComEd (Illinois)
+  {
+    program: {
+      slug: 'comed-heat-pump',
+      name: 'ComEd Electric HVAC Rebate',
+      jurisdictionType: 'utility',
+      jurisdictionCode: 'COMED',
+      programType: 'rebate',
+      status: 'active',
+      administeringEntity: 'Commonwealth Edison Company',
+      urlOfficial: 'https://www.comed.com/WaysToSave/ForYourHome/Pages/HVACRebates.aspx',
+      summaryShort: 'Rebates for efficient electric HVAC systems in ComEd territory',
+      summaryLong:
+        'ComEd provides rebates for qualifying high-efficiency electric heating and cooling systems, including heat pumps, for residential customers in northern Illinois. Can combine with federal tax credits.',
+    },
+    benefits: [
+      {
+        measure: 'heat-pump-hvac',
+        structure: 'fixed',
+        amountMax: 1200,
+        notes: 'Varies by system efficiency; confirm current ComEd schedule',
+      },
+    ],
+    eligibilityRules: [
+      {
+        ruleType: 'territory',
+        definition: {
+          utilityTerritory: 'ComEd service area (northern Illinois)',
+          note: 'Must be ComEd residential electric customer',
+        },
+      },
+      {
+        ruleType: 'equipment-spec',
+        definition: { requirements: 'Must meet ComEd efficiency standards' },
+      },
+    ],
+    sources: [
+      {
+        title: 'ComEd HVAC Rebates',
+        url: 'https://www.comed.com/WaysToSave',
         sourceType: 'tariff',
       },
     ],
