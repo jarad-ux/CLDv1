@@ -7,7 +7,7 @@ import { StateSelector } from './StateSelector'
 import { IncomeForm } from './IncomeForm'
 import { UpgradeSelector } from './UpgradeSelector'
 import { ResultsPanel } from './ResultsPanel'
-import type { CalculatorResult } from '@/lib/calculator'
+import type { EnrichedCalculatorResult } from '@/lib/ai'
 
 interface CalculatorStepsProps {
   initialStateCode?: string
@@ -25,7 +25,7 @@ export function CalculatorSteps({ initialStateCode = '' }: CalculatorStepsProps)
     wiring: false,
   })
   const [estimatedCosts, setEstimatedCosts] = useState<Record<string, number>>({})
-  const [result, setResult] = useState<CalculatorResult | null>(null)
+  const [result, setResult] = useState<EnrichedCalculatorResult | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 

@@ -2,10 +2,10 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/Card'
 import { formatCurrency } from '@/utils/format'
-import type { CalculatorResult } from '@/lib/calculator'
+import type { EnrichedCalculatorResult } from '@/lib/ai'
 
 interface ResultsPanelProps {
-  result: CalculatorResult
+  result: EnrichedCalculatorResult
 }
 
 export function ResultsPanel({ result }: ResultsPanelProps) {
@@ -105,11 +105,63 @@ export function ResultsPanel({ result }: ResultsPanelProps) {
         </Card>
       )}
 
-      {/* Notes & Guidance */}
+      {/* AI-Generated Guidance */}
+      {result.advice && (
+        <>
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg">What This Means For You</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm leading-relaxed">{result.advice.homeownerSummary}</p>
+            </CardContent>
+          </Card>
+
+          {result.advice.nextSteps.length > 0 && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg">Next Steps</CardTitle>
+                <CardDescription>Here&apos;s what to do next</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ol className="space-y-2">
+                  {result.advice.nextSteps.map((step, idx) => (
+                    <li key={idx} className="text-sm flex items-start">
+                      <span className="mr-3 font-semibold text-primary">{idx + 1}.</span>
+                      <span>{step}</span>
+                    </li>
+                  ))}
+                </ol>
+              </CardContent>
+            </Card>
+          )}
+
+          {result.advice.contractorNotes.length > 0 && (
+            <Card className="bg-muted/50">
+              <CardHeader>
+                <CardTitle className="text-lg">For Contractors</CardTitle>
+                <CardDescription>Important project requirements</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ul className="space-y-2">
+                  {result.advice.contractorNotes.map((note, idx) => (
+                    <li key={idx} className="text-sm flex items-start">
+                      <span className="mr-2">•</span>
+                      <span>{note}</span>
+                    </li>
+                  ))}
+                </ul>
+              </CardContent>
+            </Card>
+          )}
+        </>
+      )}
+
+      {/* Technical Notes */}
       {result.notes.length > 0 && (
         <Card>
           <CardHeader>
-            <CardTitle className="text-lg">Important Information</CardTitle>
+            <CardTitle className="text-lg">Technical Details</CardTitle>
           </CardHeader>
           <CardContent>
             <ul className="space-y-2">

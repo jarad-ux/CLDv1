@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation'
 import { getStateMetadata } from '@/lib/states'
+import { generateStateContent } from '@/lib/ai'
 import { CalculatorSteps } from '@/components/CalculatorSteps'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card'
 
@@ -9,13 +10,16 @@ interface StatePageProps {
   }
 }
 
-export default function StatePage({ params }: StatePageProps) {
+export default async function StatePage({ params }: StatePageProps) {
   const stateCode = params.stateCode.toLowerCase()
   const metadata = getStateMetadata(stateCode)
 
   if (!metadata) {
     notFound()
   }
+
+  // Generate dynamic content (template-based until MCP is wired)
+  const content = await generateStateContent(stateCode)
 
   const statusColor = {
     active: 'text-green-700 bg-green-50 border-green-200',
@@ -36,7 +40,7 @@ export default function StatePage({ params }: StatePageProps) {
         <div>
           <div className="flex items-center gap-4 mb-4">
             <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
-              {metadata.name} Energy Rebates
+              {content.heroTitle}
             </h1>
             <span
               className={`px-3 py-1 rounded-full text-sm font-medium ${
@@ -47,27 +51,16 @@ export default function StatePage({ params }: StatePageProps) {
             </span>
           </div>
 
-          {metadata.tagline && (
-            <p className="text-lg text-muted-foreground">{metadata.tagline}</p>
+          {content.heroSubtitle && (
+            <p className="text-lg text-muted-foreground">{content.heroSubtitle}</p>
           )}
         </div>
 
-        {/* Program Information */}
-        {metadata.notes && metadata.notes.length > 0 && (
+        {/* Program Description */}
+        {content.description && (
           <Card>
-            <CardHeader>
-              <CardTitle>{metadata.programName || 'Program Information'}</CardTitle>
-              <CardDescription>Important details about {metadata.name}</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <ul className="space-y-2">
-                {metadata.notes.map((note, idx) => (
-                  <li key={idx} className="flex items-start">
-                    <span className="mr-2">•</span>
-                    <span className="text-sm">{note}</span>
-                  </li>
-                ))}
-              </ul>
+            <CardContent className="pt-6">
+              <p className="leading-relaxed">{content.description}</p>
             </CardContent>
           </Card>
         )}
@@ -93,6 +86,49 @@ export default function StatePage({ params }: StatePageProps) {
                 you may still qualify for federal rebates and tax credits. Check the
                 calculator below for available incentives.
               </p>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* FAQ Section */}
+        {content.faq && content.faq.length > 0 && (
+          <Card>
+            <CardHeader>
+              <CardTitle>Frequently Asked Questions</CardTitle>
+              <CardDescription>
+                Common questions about {metadata.name} rebates
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-6">
+                {content.faq.map((item, idx) => (
+                  <div key={idx}>
+                    <h3 className="font-semibold mb-2">{item.question}</h3>
+                    <p className="text-sm text-muted-foreground leading-relaxed">
+                      {item.answer}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Additional Notes */}
+        {content.additionalNotes && content.additionalNotes.length > 0 && (
+          <Card>
+            <CardHeader>
+              <CardTitle>Important Information</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ul className="space-y-2">
+                {content.additionalNotes.map((note, idx) => (
+                  <li key={idx} className="flex items-start">
+                    <span className="mr-2">•</span>
+                    <span className="text-sm">{note}</span>
+                  </li>
+                ))}
+              </ul>
             </CardContent>
           </Card>
         )}
