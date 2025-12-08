@@ -1,38 +1,59 @@
 {
-  "md": {
-    "name": "Maryland",
-    "status": "active",
-    "hasHearProgram": true,
-    "programName": "Maryland HEAR Rebates",
-    "tagline": "Save thousands on energy-efficient home upgrades",
-    "notes": [
-      "Requires income documentation at application",
-      "Utility coordination needed for some measures",
-      "State funding available through MEA"
-    ]
-  },
   "ga": {
     "name": "Georgia",
-    "status": "pending",
-    "hasHearProgram": false,
-    "programName": "Georgia Energy Rebates",
-    "tagline": "Federal rebates available now",
-    "notes": [
-      "State program pending approval",
-      "Federal HEAR rebates available",
-      "Check with local utilities for additional incentives"
-    ]
-  },
-  "ca": {
-    "name": "California",
     "status": "active",
     "hasHearProgram": true,
-    "programName": "California TECH Clean California",
-    "tagline": "Leading the nation in clean energy incentives",
+    "programName": "Georgia Home Electrification & Appliance Rebates (HEAR)",
+    "tagline": "One of the most aggressive HEAR/HOMES rollouts in the nation",
     "notes": [
-      "Enhanced state rebates available",
-      "Combines federal and state programs",
-      "Additional utility rebates may apply"
+      "Launched both HOMES and HEAR early via approved-contractor pilot",
+      "Low-income households (≤80% AMI) get 100% of project costs covered",
+      "Moderate-income (80–150% AMI) get 50% coverage",
+      "Whole-home projects ≥35% savings can reach up to $16k in HOMES rebates",
+      "Georgia Power and EMCs offer additional heat pump rebates",
+      "Strong contractor network already certified and onboarded"
+    ]
+  },
+  "nc": {
+    "name": "North Carolina",
+    "status": "active",
+    "hasHearProgram": true,
+    "programName": "North Carolina Energy Rebates",
+    "tagline": "Aggressive early adopter with streamlined contractor onboarding",
+    "notes": [
+      "One of the first states to launch full HEAR program",
+      "Duke Energy and other utilities provide stacking rebates",
+      "Simplified income verification for qualified households",
+      "Strong focus on rural electrification and manufactured housing",
+      "Contractor training programs widely available"
+    ]
+  },
+  "me": {
+    "name": "Maine",
+    "status": "active",
+    "hasHearProgram": true,
+    "programName": "Maine HEAR Program",
+    "tagline": "Community-focused electrification with strong utility partnerships",
+    "notes": [
+      "Efficiency Maine Trust coordinates HEAR/HOMES delivery",
+      "Additional state weatherization funds for comprehensive retrofits",
+      "Cold-climate heat pump focus (proven down to -15°F)",
+      "Strong emphasis on oil-to-heat-pump conversions",
+      "Income-qualified households can combine HEAR + weatherization assistance"
+    ]
+  },
+  "nm": {
+    "name": "New Mexico",
+    "status": "active",
+    "hasHearProgram": true,
+    "programName": "New Mexico Energy Efficiency Rebates",
+    "tagline": "Equity-centered program with enhanced low-income benefits",
+    "notes": [
+      "Strong tribal and rural outreach programs",
+      "PNM and other utilities offer heat pump rebates that stack with HEAR",
+      "Low-income households prioritized with dedicated contractor network",
+      "Mobile home and manufactured housing upgrades eligible",
+      "Spanish-language application support widely available"
     ]
   },
   "ny": {
@@ -40,23 +61,71 @@
     "status": "active",
     "hasHearProgram": true,
     "programName": "NY Clean Heat",
-    "tagline": "New York's comprehensive home energy program",
+    "tagline": "Nation's most comprehensive home energy program with aggressive electrification goals",
     "notes": [
-      "Stacks with federal HEAR rebates",
-      "NYSERDA coordination required",
-      "Additional incentives for ConEd customers"
+      "NYSERDA coordinates stacking of federal HEAR + state EmPower/Clean Heat programs",
+      "ConEd and other utility territories offer additional rebates",
+      "Low-income households can access up to $24k+ in combined incentives",
+      "Mandatory contractor certification and quality assurance programs",
+      "Whole-home energy assessments required for HOMES",
+      "Strong focus on multifamily and affordable housing"
     ]
   },
-  "tx": {
-    "name": "Texas",
-    "status": "pending",
-    "hasHearProgram": false,
-    "programName": "Texas Energy Efficiency",
-    "tagline": "Federal rebates and utility programs",
+  "ca": {
+    "name": "California",
+    "status": "active",
+    "hasHearProgram": true,
+    "programName": "California TECH Clean California",
+    "tagline": "Leading the nation in clean energy incentives and building electrification",
     "notes": [
-      "State program not yet launched",
-      "Check with local utility providers",
-      "Federal rebates available"
+      "TECH Clean California provides enhanced heat pump rebates beyond federal caps",
+      "Bay Area and SoCal utilities (PG&E, SCE, SoCalGas) offer extensive stacking rebates",
+      "Building Performance Institute (BPI) certification widely available",
+      "Equity segments prioritized: low-income, disadvantaged communities (DACs)",
+      "Whole-home electrification pathways supported with comprehensive rebates",
+      "Additional local incentives from air quality districts (BAAQMD, SCAQMD)"
+    ]
+  },
+  "co": {
+    "name": "Colorado",
+    "status": "active",
+    "hasHearProgram": true,
+    "programName": "Colorado Energy Office Rebates",
+    "tagline": "Strong utility coordination with Xcel Energy and municipal partnerships",
+    "notes": [
+      "Xcel Energy offers some of the highest utility heat pump rebates in the nation",
+      "Income-qualified customers can combine HEAR + utility + weatherization funds",
+      "Strong focus on high-altitude and cold-climate heat pump technologies",
+      "Municipal utilities (Fort Collins, Colorado Springs) have additional programs",
+      "Whole-home energy coaching available through Energy Smart Colorado"
+    ]
+  },
+  "az": {
+    "name": "Arizona",
+    "status": "active",
+    "hasHearProgram": true,
+    "programName": "Arizona HEAR Pilot Program",
+    "tagline": "Utility-driven pilot with SRP and APS partnerships",
+    "notes": [
+      "SRP (Salt River Project) and APS lead contractor onboarding",
+      "Focus on cooling-dominant climate heat pump systems",
+      "Low-income customers prioritized in initial pilot phase",
+      "Electric panel upgrades essential for whole-home electrification",
+      "Statewide expansion planned based on pilot results"
+    ]
+  },
+  "md": {
+    "name": "Maryland",
+    "status": "active",
+    "hasHearProgram": true,
+    "programName": "Maryland HEAR Rebates",
+    "tagline": "Save thousands on energy-efficient home upgrades through MEA and utility programs",
+    "notes": [
+      "Maryland Energy Administration (MEA) coordinates state and federal programs",
+      "BGE, Pepco, Delmarva utilities offer stacking heat pump rebates",
+      "Income documentation required at application",
+      "EmPOWER Maryland provides additional low-income weatherization",
+      "Strong contractor network with BPI and HVAC Excellence certifications"
     ]
   },
   "fl": {
@@ -64,11 +133,26 @@
     "status": "pending",
     "hasHearProgram": false,
     "programName": "Florida Energy Rebates",
-    "tagline": "Coming soon",
+    "tagline": "Federal HEAR rebates available while state program development continues",
     "notes": [
-      "State program pending",
-      "Federal rebates available",
-      "Contact local utilities for current programs"
+      "State HEAR program application submitted, pending federal approval",
+      "Federal rebates available now for income-qualified households",
+      "Duke Energy Florida, FPL, TECO offer limited heat pump rebates",
+      "High cooling loads make heat pumps attractive for year-round efficiency",
+      "Contact local utilities for current efficiency programs"
+    ]
+  },
+  "tx": {
+    "name": "Texas",
+    "status": "pending",
+    "hasHearProgram": false,
+    "programName": "Texas Energy Efficiency",
+    "tagline": "Federal rebates and utility programs available while state coordination develops",
+    "notes": [
+      "State program not yet launched - federal HEAR still available",
+      "Check with local utility providers (Oncor, CenterPoint, AEP Texas)",
+      "Federal rebates available for income-qualified households",
+      "Deregulated market creates variability in utility rebate availability"
     ]
   }
 }
