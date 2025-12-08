@@ -26,6 +26,7 @@ export function CalculatorSteps({ initialStateCode = '' }: CalculatorStepsProps)
   })
   const [estimatedCosts, setEstimatedCosts] = useState<Record<string, number>>({})
   const [result, setResult] = useState<EnrichedCalculatorResult | null>(null)
+  const [programs, setPrograms] = useState<any[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -62,6 +63,32 @@ export function CalculatorSteps({ initialStateCode = '' }: CalculatorStepsProps)
 
       const data = await response.json()
       setResult(data)
+
+      // Fetch matching programs from catalog
+      try {
+        const programsResponse = await fetch('/api/programs/resolve', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            stateCode,
+            zip,
+            income,
+            householdSize,
+            upgrades,
+          }),
+        })
+
+        if (programsResponse.ok) {
+          const programsData = await programsResponse.json()
+          setPrograms(programsData.programs || [])
+        } else {
+          console.error('Failed to fetch programs:', await programsResponse.text())
+          setPrograms([])
+        }
+      } catch (programError) {
+        console.error('Program resolver error:', programError)
+        setPrograms([])
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred')
     } finally {
@@ -141,7 +168,7 @@ export function CalculatorSteps({ initialStateCode = '' }: CalculatorStepsProps)
       {/* Results Panel */}
       <div>
         {result ? (
-          <ResultsPanel result={result} />
+          <ResultsPanel result={result} programs={programs} />
         ) : (
           <Card className="bg-muted/50">
             <CardContent className="pt-6">

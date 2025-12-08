@@ -46,3 +46,79 @@ model StateMetadata {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
+// Program Catalog Models - National Rebate Registry
+
+model Program {
+  id                  String   @id @default(cuid())
+  slug                String   @unique
+  name                String
+  jurisdictionType    String   // "federal" | "state" | "utility" | "local" | "manufacturer"
+  jurisdictionCode    String   // e.g. "US", "GA", "NC", "GA_POWER"
+  programType         String   // "rebate" | "tax-credit" | "loan" | "performance" | ...
+  status              String   // "active" | "planned" | "sunset" | "closed"
+
+  administeringEntity String?
+  urlOfficial         String?
+
+  effectiveFrom       DateTime?
+  effectiveTo         DateTime?
+
+  summaryShort        String?
+  summaryLong         String?
+
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  benefits            Benefit[]
+  eligibilityRules    EligibilityRule[]
+  sources             SourceDocument[]
+
+  @@index([jurisdictionType, jurisdictionCode, status])
+  @@index([status])
+  @@index([slug])
+}
+
+model Benefit {
+  id           String   @id @default(cuid())
+  program      Program  @relation(fields: [programId], references: [id], onDelete: Cascade)
+  programId    String
+
+  measure      String   // "heat-pump-hvac", "hpwh", "panel", "insulation", ...
+  structure    String   // "fixed", "percent-of-cost", "per-ton", ...
+
+  amountMax    Int?     // in dollars (not cents); null = no max
+  percent      Float?   // 0-1 for percent-of-cost structures
+  householdCap Int?     // in dollars; null = no household cap
+
+  notes        String?
+
+  @@index([programId])
+  @@index([measure])
+}
+
+model EligibilityRule {
+  id         String   @id @default(cuid())
+  program    Program  @relation(fields: [programId], references: [id], onDelete: Cascade)
+  programId  String
+
+  ruleType   String   // "income", "territory", "fuel", "building-type", "equipment-spec", ...
+  definition Json     // structured rule details
+
+  @@index([programId])
+  @@index([ruleType])
+}
+
+model SourceDocument {
+  id             String    @id @default(cuid())
+  program        Program   @relation(fields: [programId], references: [id], onDelete: Cascade)
+  programId      String
+
+  title          String
+  url            String
+  sourceType     String    // "statute", "guidance", "tariff", "manual"
+  lastVerifiedAt DateTime?
+  verifiedBy     String?
+
+  @@index([programId])
+}

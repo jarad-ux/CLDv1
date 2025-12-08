@@ -48,3 +48,24 @@ export const LeadSchema = z.object({
 })
 
 export type LeadInput = z.infer<typeof LeadSchema>
+
+// Program Resolver Input Schema
+export const ProgramResolverInputSchema = z.object({
+  stateCode: z.string().min(2).max(2).toLowerCase(),
+  zip: z.string().regex(/^\d{5}$/),
+  income: z.number().int().min(0).optional(),
+  householdSize: z.number().int().min(1).max(8).optional(),
+  utilityIds: z.array(z.string()).optional(),
+  ownership: z.enum(['homeowner', 'renter']).optional(),
+  fuelType: z.enum(['gas', 'oil', 'propane', 'electric']).optional(),
+  upgrades: z.object({
+    heatPump: z.boolean().optional(),
+    waterHeater: z.boolean().optional(),
+    panel: z.boolean().optional(),
+    wiring: z.boolean().optional(),
+    insulation: z.boolean().optional(),
+    appliances: z.boolean().optional(),
+  }).optional(),
+})
+
+export type ProgramResolverInput = z.infer<typeof ProgramResolverInputSchema>

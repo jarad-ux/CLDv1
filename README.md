@@ -302,6 +302,212 @@ This would enable AI-generated, SEO-optimized content that adapts to program cha
 
 The app will continue working during the migration since template logic remains as fallback.
 
+---
+
+## Program Catalog & Resolver
+
+CLDv1 includes a **national rebate registry** — a normalized database of federal, state, utility, and local incentive programs. This transforms the calculator from "estimates rebates" to "enumerates the actual programs behind those rebates."
+
+### Architecture
+
+The program catalog consists of four Prisma models:
+
+#### **Program** — Every discrete incentive program
+
+```typescript
+{
+  id: string
+  slug: string              // e.g., "federal-25c-tax-credit", "ga-hear"
+  name: string              // e.g., "Federal 25C Energy Efficient Home Improvement Tax Credit"
+  jurisdictionType: string  // "federal" | "state" | "utility" | "local" | "manufacturer"
+  jurisdictionCode: string  // "US", "GA", "GA_POWER", etc.
+  programType: string       // "rebate" | "tax-credit" | "loan" | "performance"
+  status: string            // "active" | "planned" | "sunset" | "closed"
+
+  administeringEntity: string?  // e.g., "Georgia Environmental Finance Authority"
+  urlOfficial: string?          // Program homepage
+
+  effectiveFrom: DateTime?
+  effectiveTo: DateTime?
+
+  summaryShort: string?
+  summaryLong: string?
+}
+```
+
+#### **Benefit** — The actual money
+
+```typescript
+{
+  programId: string
+  measure: string      // "heat-pump-hvac", "hpwh", "panel", "insulation", ...
+  structure: string    // "fixed", "percent-of-cost", "per-ton", ...
+  amountMax: number?   // in dollars
+  percent: number?     // 0-1 for percent-of-cost structures
+  householdCap: number?
+  notes: string?
+}
+```
+
+#### **EligibilityRule** — Who qualifies
+
+```typescript
+{
+  programId: string
+  ruleType: string     // "income", "territory", "fuel", "building-type", "equipment-spec"
+  definition: Json     // structured rule details (AMI thresholds, territories, etc.)
+}
+```
+
+#### **SourceDocument** — Trust layer
+
+```typescript
+{
+  programId: string
+  title: string
+  url: string
+  sourceType: string   // "statute", "guidance", "tariff", "manual"
+  lastVerifiedAt: DateTime?
+  verifiedBy: string?
+}
+```
+
+### Program Resolver API
+
+**Endpoint**: `POST /api/programs/resolve`
+
+**Purpose**: Given an address/household profile, returns all matching rebate programs with eligibility hints.
+
+**Request Body**:
+```typescript
+{
+  stateCode: string           // Required
+  zip: string                 // Required
+  income?: number
+  householdSize?: number
+  utilityIds?: string[]       // e.g., ["GA_POWER", "ATLANTA_GAS_LIGHT"]
+  ownership?: "homeowner" | "renter"
+  fuelType?: "gas" | "oil" | "propane" | "electric"
+  upgrades?: {
+    heatPump?: boolean
+    waterHeater?: boolean
+    panel?: boolean
+    wiring?: boolean
+    insulation?: boolean
+    appliances?: boolean
+  }
+}
+```
+
+**Response**:
+```typescript
+{
+  programs: Array<{
+    id: string
+    slug: string
+    name: string
+    jurisdictionType: string
+    jurisdictionCode: string
+    programType: string
+    status: string
+    summaryShort: string | null
+    urlOfficial: string | null
+
+    benefits: Array<{
+      measure: string
+      structure: string
+      amountMax: number | null
+      percent: number | null
+      householdCap: number | null
+      notes: string | null
+    }>
+
+    eligibilitySummary: string[]  // Human-readable eligibility hints
+  }>
+}
+```
+
+**Query Logic**:
+1. Finds all active programs where `jurisdictionCode` matches:
+   - `"US"` (federal programs)
+   - The user's `stateCode` (state programs)
+   - Any provided `utilityIds` (utility-specific programs)
+2. For each program, generates human-readable eligibility hints by evaluating:
+   - **Income rules**: Compares household income to AMI thresholds, indicates qualification tier
+   - **Territory rules**: Confirms geographic eligibility
+   - **Equipment specs**: Notes ENERGY STAR or efficiency requirements
+   - **Building type**: Lists eligible building types (single-family, manufactured, etc.)
+
+**Example Eligibility Summary**:
+```typescript
+[
+  "✓ Household appears income-qualified as low-income (≤80% AMI) - 100% coverage",
+  "✓ Available in GA",
+  "ℹ Income documentation required at application",
+  "Equipment: ENERGY STAR certified, installed by approved contractor"
+]
+```
+
+### How It Complements the Calculator
+
+The calculator and the program catalog serve different purposes:
+
+- **Calculator** (`/api/calculate`): Provides **modeled rebate estimates** using HEAR/HOMES rules and state-specific overrides. Fast, deterministic, works offline.
+
+- **Program Resolver** (`/api/programs/resolve`): Returns the **actual program catalog** that applies to the project. Shows federal + state + utility programs side-by-side with eligibility criteria and source links.
+
+**In the UI**: After running the calculator, users see:
+1. Their modeled rebate estimate (from the calculator engine)
+2. The list of actual programs that apply (from the program catalog)
+
+This dual-view approach builds trust: "Here's what we estimate you'll get" + "Here are the 5 programs you'll actually interact with."
+
+### Initial Seed Data
+
+The catalog is seeded with:
+- **Federal 25C Tax Credit** (all measures)
+- **HEAR/HOMES programs** for tier-1 states (GA, NC, MD)
+- **Example utility programs** (e.g., Georgia Power HPWH rebate)
+
+To seed the database:
+```typescript
+import { PrismaClient } from '@prisma/client'
+import { seedInitialPrograms } from '@/lib/programSeed'
+
+const prisma = new PrismaClient()
+await seedInitialPrograms(prisma)
+```
+
+Or run as a standalone script:
+```bash
+node -r esbuild-register src/lib/programSeed.ts
+```
+
+### Extending the Catalog
+
+To add more programs:
+1. Define the program in `programSeed.ts` using the same structure
+2. Add benefits, eligibility rules, and source documents
+3. Run the seed function (idempotent upserts)
+
+Over time, this registry can be expanded to cover:
+- All 50 states' HEAR/HOMES programs
+- Major utility programs (Duke Energy, PG&E, Xcel, etc.)
+- Local/municipal programs
+- Manufacturer rebates (Carrier, Trane, Mitsubishi, etc.)
+
+### Future: MCP Integration
+
+When MCP is wired, you can:
+- **Auto-crawl official program pages** to detect changes
+- **Generate program summaries** with AI
+- **Match programs** with more sophisticated eligibility logic
+- **Suggest program combos** that maximize rebate stacking
+
+The catalog provides the structured data layer that makes all of this possible.
+
+---
+
 ## Data Files
 
 ### `/src/data/states.json`

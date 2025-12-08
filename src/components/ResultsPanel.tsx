@@ -6,9 +6,10 @@ import type { EnrichedCalculatorResult } from '@/lib/ai'
 
 interface ResultsPanelProps {
   result: EnrichedCalculatorResult
+  programs?: any[]
 }
 
-export function ResultsPanel({ result }: ResultsPanelProps) {
+export function ResultsPanel({ result, programs = [] }: ResultsPanelProps) {
   const incomeCategoryLabel = {
     low: 'Low Income (≤80% AMI)',
     moderate: 'Moderate Income (81-150% AMI)',
@@ -172,6 +173,111 @@ export function ResultsPanel({ result }: ResultsPanelProps) {
                 </li>
               ))}
             </ul>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Program Catalog - Programs that apply to this project */}
+      {programs && programs.length > 0 && (
+        <Card className="border-2 border-primary/20">
+          <CardHeader>
+            <CardTitle className="text-lg">Programs That May Apply to This Project</CardTitle>
+            <CardDescription>
+              Based on our national rebate registry - {programs.length}{' '}
+              {programs.length === 1 ? 'program' : 'programs'} found
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-6">
+              {programs.map((program) => (
+                <div key={program.id} className="border-l-4 border-primary/30 pl-4 py-2">
+                  <div className="flex items-start justify-between mb-2">
+                    <div className="flex-1">
+                      <h4 className="font-semibold text-base">{program.name}</h4>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        {program.jurisdictionType === 'federal' && '🇺🇸 Federal Program'}
+                        {program.jurisdictionType === 'state' && `📍 State Program (${program.jurisdictionCode})`}
+                        {program.jurisdictionType === 'utility' && `⚡ Utility Program`}
+                        {program.jurisdictionType === 'local' && `🏘️ Local Program`}
+                        {' • '}
+                        {program.programType === 'rebate' && 'Rebate'}
+                        {program.programType === 'tax-credit' && 'Tax Credit'}
+                        {program.programType === 'performance' && 'Performance-Based'}
+                        {program.programType === 'loan' && 'Loan Program'}
+                      </p>
+                    </div>
+                  </div>
+
+                  {program.summaryShort && (
+                    <p className="text-sm text-muted-foreground mb-3">{program.summaryShort}</p>
+                  )}
+
+                  {program.benefits && program.benefits.length > 0 && (
+                    <div className="mb-3">
+                      <p className="text-xs font-semibold text-muted-foreground uppercase mb-2">
+                        Available Benefits
+                      </p>
+                      <div className="space-y-1">
+                        {program.benefits.map((benefit: any, idx: number) => (
+                          <div key={idx} className="text-sm flex items-start">
+                            <span className="mr-2">•</span>
+                            <span>
+                              <span className="capitalize">
+                                {benefit.measure.replace(/-/g, ' ')}
+                              </span>
+                              {': '}
+                              {benefit.structure === 'fixed' &&
+                                benefit.amountMax &&
+                                `Up to ${formatCurrency(benefit.amountMax)}`}
+                              {benefit.structure === 'percent-of-cost' &&
+                                benefit.percent &&
+                                `${Math.round(benefit.percent * 100)}% of cost`}
+                              {benefit.structure === 'performance' && 'Based on energy savings'}
+                              {benefit.amountMax &&
+                                benefit.structure === 'percent-of-cost' &&
+                                ` (max ${formatCurrency(benefit.amountMax)})`}
+                              {benefit.notes && (
+                                <span className="text-xs text-muted-foreground block ml-0 mt-0.5">
+                                  {benefit.notes}
+                                </span>
+                              )}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {program.eligibilitySummary && program.eligibilitySummary.length > 0 && (
+                    <div className="bg-muted/30 rounded p-3">
+                      <p className="text-xs font-semibold text-muted-foreground uppercase mb-2">
+                        Eligibility
+                      </p>
+                      <div className="space-y-1">
+                        {program.eligibilitySummary.map((item: string, idx: number) => (
+                          <p key={idx} className="text-xs leading-relaxed">
+                            {item}
+                          </p>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {program.urlOfficial && (
+                    <div className="mt-3">
+                      <a
+                        href={program.urlOfficial}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-xs text-primary hover:underline"
+                      >
+                        View official program details →
+                      </a>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
           </CardContent>
         </Card>
       )}
