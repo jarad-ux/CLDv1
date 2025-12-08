@@ -1,0 +1,20 @@
+{
+  "21201": { "state": "MD", "county": "Baltimore City" },
+  "21202": { "state": "MD", "county": "Baltimore City" },
+  "20850": { "state": "MD", "county": "Montgomery County" },
+  "20910": { "state": "MD", "county": "Montgomery County" },
+  "30314": { "state": "GA", "county": "Fulton County" },
+  "30032": { "state": "GA", "county": "DeKalb County" },
+  "30303": { "state": "GA", "county": "Fulton County" },
+  "90001": { "state": "CA", "county": "Los Angeles County" },
+  "94102": { "state": "CA", "county": "San Francisco County" },
+  "94110": { "state": "CA", "county": "San Francisco County" },
+  "10001": { "state": "NY", "county": "New York County" },
+  "10002": { "state": "NY", "county": "New York County" },
+  "11201": { "state": "NY", "county": "Kings County" },
+  "75201": { "state": "TX", "county": "Dallas County" },
+  "77002": { "state": "TX", "county": "Harris County" },
+  "78701": { "state": "TX", "county": "Travis County" },
+  "33101": { "state": "FL", "county": "Miami-Dade County" },
+  "32801": { "state": "FL", "county": "Orange County" }
+}

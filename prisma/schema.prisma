@@ -1,0 +1,48 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Lead {
+  id            String   @id @default(cuid())
+  fullName      String?
+  email         String?
+  phone         String?
+  address       String?
+  zip           String?
+  utility       String?
+  ownership     String?
+  fuelType      String?
+  consent       Boolean  @default(false)
+
+  stateCode     String
+  income        Int?
+  householdSize Int?
+
+  upgrades      Json
+  result        Json
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([stateCode])
+  @@index([zip])
+  @@index([createdAt])
+}
+
+model StateMetadata {
+  id        String   @id // 2-letter state code like "md"
+  name      String
+  status    String
+  data      Json
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

@@ -1,0 +1,74 @@
+{
+  "md": {
+    "name": "Maryland",
+    "status": "active",
+    "hasHearProgram": true,
+    "programName": "Maryland HEAR Rebates",
+    "tagline": "Save thousands on energy-efficient home upgrades",
+    "notes": [
+      "Requires income documentation at application",
+      "Utility coordination needed for some measures",
+      "State funding available through MEA"
+    ]
+  },
+  "ga": {
+    "name": "Georgia",
+    "status": "pending",
+    "hasHearProgram": false,
+    "programName": "Georgia Energy Rebates",
+    "tagline": "Federal rebates available now",
+    "notes": [
+      "State program pending approval",
+      "Federal HEAR rebates available",
+      "Check with local utilities for additional incentives"
+    ]
+  },
+  "ca": {
+    "name": "California",
+    "status": "active",
+    "hasHearProgram": true,
+    "programName": "California TECH Clean California",
+    "tagline": "Leading the nation in clean energy incentives",
+    "notes": [
+      "Enhanced state rebates available",
+      "Combines federal and state programs",
+      "Additional utility rebates may apply"
+    ]
+  },
+  "ny": {
+    "name": "New York",
+    "status": "active",
+    "hasHearProgram": true,
+    "programName": "NY Clean Heat",
+    "tagline": "New York's comprehensive home energy program",
+    "notes": [
+      "Stacks with federal HEAR rebates",
+      "NYSERDA coordination required",
+      "Additional incentives for ConEd customers"
+    ]
+  },
+  "tx": {
+    "name": "Texas",
+    "status": "pending",
+    "hasHearProgram": false,
+    "programName": "Texas Energy Efficiency",
+    "tagline": "Federal rebates and utility programs",
+    "notes": [
+      "State program not yet launched",
+      "Check with local utility providers",
+      "Federal rebates available"
+    ]
+  },
+  "fl": {
+    "name": "Florida",
+    "status": "pending",
+    "hasHearProgram": false,
+    "programName": "Florida Energy Rebates",
+    "tagline": "Coming soon",
+    "notes": [
+      "State program pending",
+      "Federal rebates available",
+      "Contact local utilities for current programs"
+    ]
+  }
+}
