@@ -16,6 +16,7 @@ interface CalculatorStepsProps {
 export function CalculatorSteps({ initialStateCode = '' }: CalculatorStepsProps) {
   const [stateCode, setStateCode] = useState(initialStateCode)
   const [zip, setZip] = useState('')
+  const [utility, setUtility] = useState('')
   const [income, setIncome] = useState(0)
   const [householdSize, setHouseholdSize] = useState(3)
   const [upgrades, setUpgrades] = useState({
@@ -75,6 +76,7 @@ export function CalculatorSteps({ initialStateCode = '' }: CalculatorStepsProps)
             income,
             householdSize,
             upgrades,
+            utilityIds: utility ? [utility.trim().toUpperCase()] : undefined,
           }),
         })
 
@@ -114,6 +116,37 @@ export function CalculatorSteps({ initialStateCode = '' }: CalculatorStepsProps)
           </CardHeader>
           <CardContent>
             <StateSelector value={stateCode} onChange={setStateCode} />
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Step 1b: Utility Provider (Optional)</CardTitle>
+            <CardDescription>
+              Include utility-specific rebates from providers like SCE, PG&E, Duke Energy, etc.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-2">
+              <label
+                htmlFor="utility"
+                className="block text-sm font-medium text-foreground"
+              >
+                Utility Code
+              </label>
+              <input
+                id="utility"
+                type="text"
+                value={utility}
+                onChange={(e) => setUtility(e.target.value)}
+                placeholder="e.g., SCE, PGE, GA_POWER, DUKE_ENERGY"
+                className="block w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+              />
+              <p className="text-xs text-muted-foreground">
+                Common codes: SCE, PGE (CA); GA_POWER (GA); DUKE_ENERGY (Multi-state);
+                XCEL_ENERGY (Multi-state); CONED (NY); COMED (IL)
+              </p>
+            </div>
           </CardContent>
         </Card>
 
