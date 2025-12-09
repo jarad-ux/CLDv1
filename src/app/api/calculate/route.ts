@@ -22,7 +22,7 @@ export async function POST(request: NextRequest) {
     const input = validationResult.data
 
     // Calculate rebates
-    const result = calculateRebates(input)
+    const result = await calculateRebates(input)
 
     // Enrich with AI guidance (MCP hook - currently a passthrough)
     const enrichedResult = await enrichWithGuidance(result)

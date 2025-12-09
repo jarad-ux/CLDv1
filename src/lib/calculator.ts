@@ -1,8 +1,9 @@
 import { lookupByZip } from './ami'
 import { determineIncomeCategory, type IncomeCategory } from './federal'
 import { federalRules } from './engine/federalRules'
-import { stateOverrides } from './engine/stateOverrides'
+import { stateOverrides, type StateRebateRules } from './engine/stateOverrides'
 import { mergeRules } from './engine/mergeRules'
+import { getRulesForStateFromCatalog } from './rulesFromCatalog'
 
 export interface CalculatorInput {
   stateCode: string
@@ -41,7 +42,7 @@ export interface CalculatorResult {
   notes: string[]
 }
 
-export function calculateRebates(input: CalculatorInput): CalculatorResult {
+export async function calculateRebates(input: CalculatorInput): Promise<CalculatorResult> {
   const notes: string[] = []
   const lineItems: CalculatorLineItem[] = []
 
@@ -59,11 +60,16 @@ export function calculateRebates(input: CalculatorInput): CalculatorResult {
     ? determineIncomeCategory(input.income, amiLookup.ami)
     : 'overLimit'
 
-  // Step 3: Get applicable rules (federal + state overrides)
-  const rules = mergeRules(
-    federalRules,
-    stateOverrides[input.stateCode.toLowerCase()]
-  )
+  // Step 3: Get applicable rules (catalog -> hard-coded overrides -> pure federal)
+  let rules: StateRebateRules = federalRules
+
+  const catalogRules = await getRulesForStateFromCatalog(input.stateCode)
+  if (catalogRules) {
+    rules = catalogRules
+  } else {
+    const override = stateOverrides[input.stateCode.toLowerCase()]
+    rules = mergeRules(federalRules, override)
+  }
 
   // Step 4: Calculate HEAR rebates for each upgrade
   const coveragePercent = rules.coveragePercentage[incomeCategory]
